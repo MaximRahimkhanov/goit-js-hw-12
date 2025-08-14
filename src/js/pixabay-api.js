@@ -1,15 +1,8 @@
-
-
-// export axios.get('https://pixabay.com/api/?key=51719730-f0601b97791df742fe437894d&image_type=photo')
-//   .then((response) => {
-//     console.log(JSON.stringify(response.data));
-//   })
-//   .catch((error) => {
-//     console.error(error);
-//   });
 import axios from 'axios';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
-export function getImagesByQuery(query) {
+export async function getImagesByQuery(query, page) {
   const API_KEY = '51719730-f0601b97791df742fe437894d';
   const BASE_URL = 'https://pixabay.com/api/';
 
@@ -18,8 +11,22 @@ export function getImagesByQuery(query) {
     q: query,
     image_type: 'photo',
     orientation: 'horizontal',
-    safesearch: true
+    safesearch: true,
+    page: page,
+    per_page: 15
   };
 
-  return axios.get(BASE_URL, { params }).then(res => res.data);
+  try {
+    const res = await axios.get(BASE_URL, { params });
+    return res.data;
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: `Не вдалося отримати зображення: ${error.message}`,
+      position: 'topRight',
+      timeout: 5000
+    });
+    return { hits: [], totalHits: 0 };
+  }
 }
+

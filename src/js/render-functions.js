@@ -22,10 +22,10 @@ function templateImage(img) {
 
 export function createGallery(images) {
   const markup = images.map(templateImage).join('');
-  galleryContainer.innerHTML = markup;
-
+  galleryContainer.insertAdjacentHTML('beforeend', markup);
   lightbox.refresh();
 }
+
 
 export function clearGallery() {
   galleryContainer.innerHTML = '';
@@ -37,4 +37,18 @@ export function showLoader() {
 
 export function hideLoader() {
   document.querySelector('.loader').classList.remove('visible');
+}
+
+export function showLoadBtn() {
+  const btn = document.querySelector('.js-loadbtn');
+  if (btn.classList.contains('is-hidden')) {
+    btn.classList.remove('is-hidden');
+  }
+}
+
+export function hideLoadBtn() {
+  const btn = document.querySelector('.js-loadbtn');
+  if (!btn.classList.contains('is-hidden')) {
+    btn.classList.add('is-hidden');
+  }
 }
