@@ -17,6 +17,8 @@ const loadbtnEl = document.querySelector('.js-loadbtn');
 
 let currentQuery = '';
 let currentPage = 1;
+let totalLoaded = 0;
+let totalHits = 0;
 
 formEl.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -33,6 +35,7 @@ formEl.addEventListener('submit', async (e) => {
 
   currentQuery = query;
   currentPage = 1;
+  totalLoaded = 0;
 
   clearGallery();
   hideLoadBtn();
@@ -40,6 +43,7 @@ formEl.addEventListener('submit', async (e) => {
 
   try {
     const response = await getImagesByQuery(currentQuery, currentPage);
+    totalHits = response.totalHits;
 
     if (response.hits.length === 0) {
       iziToast.info({
@@ -51,7 +55,11 @@ formEl.addEventListener('submit', async (e) => {
     }
 
     createGallery(response.hits);
-    showLoadBtn();
+    totalLoaded += response.hits.length;
+
+    if (shouldShowLoadBtn()) {
+      showLoadBtn();
+    }
   } catch (error) {
     iziToast.error({
       title: 'Error',
@@ -66,23 +74,27 @@ formEl.addEventListener('submit', async (e) => {
 
 loadbtnEl.addEventListener('click', async () => {
   currentPage += 1;
+  disableLoadBtn();
   showLoader();
 
   try {
     const response = await getImagesByQuery(currentQuery, currentPage);
 
-    if (response.hits.length === 0) {
+    createGallery(response.hits);
+    totalLoaded += response.hits.length;
+
+    if (totalLoaded >= totalHits) {
+      hideLoadBtn();
       iziToast.info({
         title: 'End of Results',
-        message: "We're sorry, but you've reached the end of search results.",
+        message: "You've reached the end of search results.",
         position: 'topCenter'
       });
-      hideLoadBtn();
-      return;
+    } else {
+      enableLoadBtn(); 
     }
 
-    createGallery(response.hits);
-    smoothScrollAfterLoad()
+    smoothScrollAfterLoad();
   } catch (error) {
     iziToast.error({
       title: 'Error',
@@ -90,10 +102,17 @@ loadbtnEl.addEventListener('click', async () => {
       position: 'topCenter'
     });
     console.error('Load more error:', error);
+    enableLoadBtn(); 
   } finally {
     hideLoader();
   }
 });
+
+
+
+function shouldShowLoadBtn() {
+  return totalLoaded < totalHits;
+}
 
 function smoothScrollAfterLoad() {
   const firstCard = document.querySelector('.gallery__item');
@@ -105,4 +124,14 @@ function smoothScrollAfterLoad() {
     top: cardHeight * 2,
     behavior: 'smooth'
   });
+}
+
+function disableLoadBtn() {
+  loadbtnEl.disabled = true;
+  loadbtnEl.classList.add('is-disabled'); // стилізуй у CSS
+}
+
+function enableLoadBtn() {
+  loadbtnEl.disabled = false;
+  loadbtnEl.classList.remove('is-disabled');
 }
