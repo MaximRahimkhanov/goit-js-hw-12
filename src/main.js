@@ -8,12 +8,15 @@ import {
   showLoader,
   hideLoader,
   showLoadBtn,
-  hideLoadBtn
+  hideLoadBtn,
+  enableLoadBtn,
+  disableLoadBtn
 } from './js/render-functions.js';
 
 const formEl = document.querySelector('.form');
 const inputEl = document.querySelector('.form-input');
 const loadbtnEl = document.querySelector('.js-loadbtn');
+
 
 let currentQuery = '';
 let currentPage = 1;
@@ -73,8 +76,9 @@ formEl.addEventListener('submit', async (e) => {
 });
 
 loadbtnEl.addEventListener('click', async () => {
+  
   currentPage += 1;
-  disableLoadBtn();
+  disableLoadBtn(loadbtnEl);
   showLoader();
 
   try {
@@ -91,7 +95,7 @@ loadbtnEl.addEventListener('click', async () => {
         position: 'topCenter'
       });
     } else {
-      enableLoadBtn(); 
+      enableLoadBtn(loadbtnEl); 
     }
 
     smoothScrollAfterLoad();
@@ -102,7 +106,7 @@ loadbtnEl.addEventListener('click', async () => {
       position: 'topCenter'
     });
     console.error('Load more error:', error);
-    enableLoadBtn(); 
+    enableLoadBtn(loadbtnEl); 
   } finally {
     hideLoader();
   }
@@ -126,12 +130,3 @@ function smoothScrollAfterLoad() {
   });
 }
 
-function disableLoadBtn() {
-  loadbtnEl.disabled = true;
-  loadbtnEl.classList.add('is-disabled'); // стилізуй у CSS
-}
-
-function enableLoadBtn() {
-  loadbtnEl.disabled = false;
-  loadbtnEl.classList.remove('is-disabled');
-}

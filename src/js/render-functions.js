@@ -2,8 +2,6 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
 const galleryContainer = document.querySelector('.gallery');
-
-
 const lightbox = new SimpleLightbox('.gallery a');
 
 function templateImage(img) {
@@ -26,7 +24,6 @@ export function createGallery(images) {
   lightbox.refresh();
 }
 
-
 export function clearGallery() {
   galleryContainer.innerHTML = '';
 }
@@ -41,14 +38,21 @@ export function hideLoader() {
 
 export function showLoadBtn() {
   const btn = document.querySelector('.js-loadbtn');
-  if (btn.classList.contains('is-hidden')) {
-    btn.classList.remove('is-hidden');
-  }
+  btn.classList.remove('is-hidden');
 }
 
 export function hideLoadBtn() {
   const btn = document.querySelector('.js-loadbtn');
-  if (!btn.classList.contains('is-hidden')) {
-    btn.classList.add('is-hidden');
-  }
+  btn.classList.add('is-hidden');
 }
+
+export function disableLoadBtn(btn) {
+  btn.disabled = true;
+  btn.classList.add('is-disabled');
+}
+
+export function enableLoadBtn(btn) {
+  btn.disabled = false;
+  btn.classList.remove('is-disabled');
+}
+
